@@ -1,0 +1,30 @@
+extend mobile-layout
+
+block global
+    - var title = '生产中的订单'
+    - var pageTitle = '生产中的订单'
+block pageContent
+    .row
+        each item in productOrderList
+            .col-xs-2
+                //- 设计图
+                if item.designImageUrl
+                    a(href=`/CourierOrder/DesignImage?id=${item.id}`)
+                        img(style="width: 100%" src=item.designImageUrl)
+            .col-xs-10
+               
+      //- 订单号 产品名称 数量
+      //- 描述 大类名称 小类描述 产品名标签
+			//- 数量  数量标签         
+			//- 配送方式
+			//- 生产时间
+                p 订单号：#{item.id}
+                p 描述：#{item.bigClass} #{item.smallClassRemark} #{item.title}
+                p 数量：#{item.quantity}
+                p 配送方式：#{item.deliveryType}
+                p 生产时间：#{item.designDoneAt}
+                p 预计送达时间：#{item.expectedDeliveryDoneAt}
+            .col-xs-12
+                //- 送货地址
+                p #{item.deliveryAddress} #{item.deliveryName} #{item.deliveryPhone}
+                hr

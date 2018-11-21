@@ -1,0 +1,127 @@
+//- 所有订单
+
+extend ../mallMaster/mallmaster-layout
+
+block global
+    - var title = '所有订单'
+    - var pageTitle = '所有订单'
+    - var urlPrefix = '/MallMasterOrder/All'
+    - var exportUrlPrefix = '/MallMasterOrder/ExportAll'
+    - var listTitle = '所有订单列表'
+append pageContent
+
+    .row
+        .col-lg-12
+            if records.meta.previousPage
+                a(href=`${urlPrefix}?page=${records.meta.previousPage}&q=${q || ''}`) 上一页
+
+            if records.meta.nextPage
+                a(href=`${urlPrefix}?page=${records.meta.nextPage}&q=${q || ''}`) 下一页
+
+            form.form-inline
+                form-group
+                    label.control-label
+                    input#q.form-control(
+                    type="text"
+                    name="q"
+                    placeholder="关键词"
+                    )
+                button#query.btn.btn-link(
+                type="button"
+                ) 搜索
+                button#export.btn.btn-link(
+                type="button"
+                ) 导出本页结果
+
+            h4 #{listTitle}
+
+            if records.data.length === 0
+                p 暂无相关订单
+
+            each item in records.data
+                - var designCostText = item.designService === '需要设计' ? item.designCostRemark : '免费'
+                table.table.table-bordered.table-striped
+                    tr
+                        th(style="color: red") 订单号
+                        th 下单时间
+                        th 订单金额
+                        th 客户姓名
+                        th 电话
+                        th 单位
+                        th 退单退款
+                    tr
+                        td(style="color: red")= item.id
+                        td= item.orderCreatedAt
+                        td= item.orderAmount
+                        td
+                            a(href=`/MallMasterOrder/ByCustomer?id=${item.customerId}`)
+                                = item.customerName
+                        td= item.customerPhone
+                        td= item.customerOrgAbbr
+                        td= item.refundRemark
+                
+                //- 收货人信息        
+                include _layout/deliveryAddressPart
+                
+                table.table.table-bordered.table-striped
+                    tr
+                        th 产品描述
+                        th 设计费范围
+                        th 设计师及手机号
+                        th 设计接单时间
+                        th 设计完成时间
+                    tr
+                        //- 大类 小类 小类描述 产品名称
+                        td
+                            = item.bigClass
+                            = item.smallClass
+                            = item.smallClassRemark
+                            = item.title
+                        td= item.designCostRemark
+                        td
+                            = item.designerName
+                            = item.designerPhone
+                        td= item.designDoingAt
+                        td= item.designDoneAt
+                table.table.table-bordered.table-striped
+                    tr
+                        th 预计送达时间
+                        th 配送方式
+                        th 送货状态
+                        th 揽货时间
+                        th 送达时间
+                        th 送货员
+                    tr
+                        td= item.expectedDeliveryDoneAt
+                        td= item.deliveryType
+                        td= item.orderState
+                        td= item.deliveryDoingAt
+                        td= item.deliveryDoneAt
+                        td= item.courierName
+                table.table.table-bordered.table-striped
+                    tr
+                        th 终稿截图
+                        th 发货截图
+                    tr
+                        td
+                            if item.designImageUrl
+                                a(href=`/MallMasterOrder/DesignImage?id=${item.id}`)
+                                    img(style="width: 40px" src=item.designImageUrl)
+                        td
+                            if item.deliveryImageUrl
+                                a(href=`/MallMasterOrder/DeliveryImage?id=${item.id}`)
+                                    img(style="width: 40px" src=item.deliveryImageUrl)
+                hr
+block script
+    script.
+        $('#query').on('click', function () {
+            var q = $('#q').val()
+            var url = '#{urlPrefix}?q=' + encodeURIComponent(q)
+            window.location.href = url
+        })
+        $('#export').on('click', function () {
+            var q = $('#q').val()
+            var page = #{records.meta.page}
+            var url = '#{exportUrlPrefix}?page=' + page + '&q=' + q
+            window.location.href = url
+        })

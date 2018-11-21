@@ -1,0 +1,73 @@
+extends ../../_layout/layout-noside
+
+block global
+
+block main
+    .container
+        h5 添加服务
+        .row
+            form.col.s12
+                .input-field.col.s12
+                    p 请选择服务对象
+                .col.s12
+                    p 是否贫困户
+                .col.s12
+                    p
+                        input#pkh(name="是否贫困户" type="radio" value="贫困户")
+                        label(for="pkh") 贫困户
+                    p
+                        input#fpkh(name="是否贫困户" type="radio" value="非贫困户")
+                        label(for="fpkh") 非贫困户
+                
+                .input-field.col.s12
+                    input#p.validate(name="联系电话" type="text")
+                    label(for="p") 联系电话       
+                        
+                .input-field.col.s12
+                    select(name='服务内容')
+                        each bigItem in productClassList
+                            optgroup(label=bigItem['名称'])
+                                each smallItem in bigItem['内容列表'] || []
+                                    option(value=smallItem._id)= smallItem['名称']
+                    label 服务内容列表
+                        
+                .input-field.col.s12
+                   input#p.validate(name="金额（元）" type="text")
+                   label(for="p") 金额
+                   
+                .col.s12
+                    label 办理时间
+                    input.validate(name="办理日期" type="date" value=todayDate)
+                         
+                
+                .input-field.col.s12
+                    input#p.validate(name="服务人员" type="text")
+                    label(for="p") 服务人员
+                .col.s12
+                    label 办理时间
+                    input.validate(name="日期" type="date" value=todayDate)
+                  
+                  
+                .input-field.col.s12
+                    input#p.validate(name="意见反馈" type="text")
+                    label(for="p") 意见反馈  
+                    
+                .col.s12
+                    button.btn.waves-effect.waves-light.btn-large(type="submit") 保存
+
+block script
+    script.
+        $('form').on('submit', function () {
+            var duration = 4000
+            var params = $('form').serialize()
+            $.post('/site/buy-sell/add', params).done(function (data) {
+                if (data.success) {
+                    window.alert('保存成功')
+                } else {
+                    Materialize.toast(data.msg || '保存失败', duration)
+                }
+            }).fail(function (data) {
+                Materialize.toast('网络错误', duration)
+            })
+            return false
+        })

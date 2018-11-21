@@ -1,0 +1,78 @@
+extends ../../_layout/layout
+
+block global
+    - title = '快递物流'
+        
+block main
+    h1 快递物流
+
+    //-
+        导出为Excel
+    .row
+        form#export.col.s12
+            .row
+                .col.s12
+                    p 数据导出
+                .col.s4
+                    label 起始日期
+                    input.validate(name="起始日期" type="date" value=todayDate)
+                .col.s4
+                    label 截止日期
+                    input.validate(name="截止日期" type="date" value=todayDate)
+                .col.s4.input-field
+                    a.btn.waves-effect.waves-light(href="#" onclick="exportAsExcel()") 导出为Excel
+
+    a.btn.waves-effect.waves-light(href="/site/buy-sell/add" target="_blank") 新增
+
+    table.table.bordered
+        tr
+            th 单号
+            th 快递公司名称
+            th 发货时间
+            th 收货地点
+            th 联系电话
+            th 服务人员
+            th 确认签字
+            th （修改）
+            th （删除）
+        each item in itemList
+            tr
+                td= item['单号']
+                td= item['快递公司'] && item['快递公司分类']['名称']
+                td= item['发货时间']
+                td= item['收货地点']
+                td= item['联系电话']
+                td= item['服务人员']
+                td= item['确认签字']
+                td
+                    a(href=`/site/buy-sell/edit?id=${item._id}` target="_blank") 修改
+                td
+                    a(href='#' onclick=`removeItem('${item._id}');return false;`) 删除
+block script
+    script.
+        var duration = 4000
+        function removeItem(id) {
+            var sure = window.confirm('您确定要删除吗？删除后将不可恢复')
+            if (!sure) {
+                return
+            }
+            var url = '/site/buy-sell/remove'
+            $.post(url, {
+                id: id
+            }).done(function (data) {
+                if (data.success) {
+                    Materialize.toast(data.msg || '删除成功', duration)
+                    window.location.reload(true)
+                } else {
+                    Materialize.toast(data.msg || '删除失败', duration)
+                }
+            }).fail(function () {
+                Materialize.toast('网络错误', duration)
+            })
+        }
+        function exportAsExcel() {
+            var s = $('#export input[name=起始日期]').val()
+            var e = $('#export input[name=截止日期]').val()
+            var url = '/site/buy-sell/export?s=' + s + '&e=' + e
+            window.open(url)
+        }

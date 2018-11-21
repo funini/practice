@@ -1,0 +1,71 @@
+//-
+    站点：快递物流 编辑
+
+extends ../../_layout/layout-noside
+
+block global
+
+block main
+    .container
+        h5 编辑快递物流 信息
+        .row
+            .input-field.col.s12
+	              input#p.validate(name="单号" type="text")
+	              label(for="p") 单号
+	              
+	          .input-field.col.s12
+	              p 快递公司
+	               
+	          .col.s12
+	              p
+	                  input#alipay(name="快递公司" type="radio" value="顺丰")
+	                  label(for="alipay") 顺丰
+	              p
+	                  input#weixin(name="快递公司" type="radio" value="韵达")
+	                  label(for="weixin") 韵达
+	              p
+	                  input#cash(name="快递公司" type="radio" value="百世")
+	                  label(for="cash") 百世
+	              p
+	                  input#other(name="快递公司" type="radio" value="其他")
+	                  label(for="other") 其他
+	                                     
+	          .col.s12
+	              label 发货时间
+	              input.validate(name="发货时间" type="date" value=todayDate)
+	              
+	          .input-field.col.s12
+	              input#p.validate(name="收货地点" type="text")
+	              label(for="p") 收货地点
+	              
+	          .input-field.col.s12
+	              input#p.validate(name="联系电话" type="text")
+	              label(for="p") 联系电话
+	              
+	          .input-field.col.s12
+	              input#p.validate(name="服务人员" type="text")
+	              label(for="p") 服务人员
+	              
+	          .input-field.col.s12
+	              input#p.validate(name="确认签字" type="text")
+	              label(for="p") 确认签字
+	              
+            .col.s12
+                    button.btn.waves-effect.waves-light.btn-large(type="submit") 保存
+
+block script
+    script.
+        $('form').on('submit', function () {
+            var duration = 4000
+            var params = $('form').serialize()
+            $.post('/site/buy-sell/edit', params).done(function (data) {
+                if (data.success) {
+                    window.alert('保存成功')
+                } else {
+                    Materialize.toast(data.msg || '保存失败', duration)
+                }
+            }).fail(function (data) {
+                Materialize.toast('网络错误', duration)
+            })
+            return false
+        })
